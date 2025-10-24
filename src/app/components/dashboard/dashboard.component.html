@@ -1,0 +1,175 @@
+<div class="container-fluid py-4">
+  <div class="page-header">
+    <div class="d-flex justify-content-between align-items-center">
+      <div>
+        <h1>Dashboard</h1>
+        <p class="text-muted mb-0">Welcome back, {{ currentUser()?.firstName }} {{ currentUser()?.lastName }}!</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Statistics Cards -->
+  <div class="row g-4 mb-4">
+    <div class="col-md-6 col-lg-3">
+      <div class="card stat-card bg-primary text-white">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h6 class="card-title text-white-50 mb-2">Total Users</h6>
+              <h2 class="mb-0 fw-bold">{{ totalUsers() }}</h2>
+            </div>
+            <div class="stat-icon">
+              <i class="bi bi-people-fill fs-1"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6 col-lg-3">
+      <div class="card stat-card bg-success text-white">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h6 class="card-title text-white-50 mb-2">Active Users</h6>
+              <h2 class="mb-0 fw-bold">{{ activeUsers() }}</h2>
+            </div>
+            <div class="stat-icon">
+              <i class="bi bi-person-check-fill fs-1"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6 col-lg-3">
+      <div class="card stat-card bg-warning text-white">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h6 class="card-title text-white-50 mb-2">Total Roles</h6>
+              <h2 class="mb-0 fw-bold">{{ totalRoles() }}</h2>
+            </div>
+            <div class="stat-icon">
+              <i class="bi bi-shield-fill-check fs-1"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6 col-lg-3">
+      <div class="card stat-card bg-info text-white">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h6 class="card-title text-white-50 mb-2">Your Role</h6>
+              <h2 class="mb-0 fw-bold text-truncate" style="font-size: 1.5rem;">{{ currentUser()?.role?.name }}</h2>
+            </div>
+            <div class="stat-icon">
+              <i class="bi bi-person-badge-fill fs-1"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="row g-4 mb-4">
+    <div class="col-lg-8">
+      <div class="card">
+        <div class="card-header bg-white">
+          <h5 class="mb-0 fw-semibold">Recent Users</h5>
+        </div>
+        <div class="card-body">
+          @if (recentUsers().length > 0) {
+            <div class="table-responsive">
+              <table class="table table-hover mb-0">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (user of recentUsers(); track user.id) {
+                    <tr>
+                      <td>
+                        <div class="d-flex align-items-center">
+                          <div class="avatar-circle me-2">
+                            {{ user.firstName.charAt(0) }}{{ user.lastName.charAt(0) }}
+                          </div>
+                          <span class="fw-semibold">{{ user.firstName }} {{ user.lastName }}</span>
+                        </div>
+                      </td>
+                      <td>{{ user.email }}</td>
+                      <td>
+                        <span class="badge bg-primary">{{ user.role?.name || 'No Role' }}</span>
+                      </td>
+                      <td>
+                        @if (user.isActive) {
+                          <span class="badge bg-success">Active</span>
+                        } @else {
+                          <span class="badge bg-secondary">Inactive</span>
+                        }
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          } @else {
+            <div class="text-center py-4 text-muted">
+              <i class="bi bi-inbox fs-1"></i>
+              <p class="mb-0 mt-2">No users found</p>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="card">
+        <div class="card-header bg-white">
+          <h5 class="mb-0 fw-semibold">Quick Actions</h5>
+        </div>
+        <div class="card-body">
+          <div class="d-grid gap-2">
+            @if (hasPermission('users')) {
+              <a routerLink="/users" class="btn btn-outline-primary text-start">
+                <i class="bi bi-people me-2"></i> Manage Users
+              </a>
+            }
+            @if (hasPermission('roles')) {
+              <a routerLink="/roles" class="btn btn-outline-secondary text-start">
+                <i class="bi bi-shield-check me-2"></i> Manage Roles
+              </a>
+            }
+          </div>
+        </div>
+      </div>
+
+      <div class="card mt-3">
+        <div class="card-header bg-white">
+          <h5 class="mb-0 fw-semibold">Your Permissions</h5>
+        </div>
+        <div class="card-body">
+          @if (currentUser()?.role?.permissions) {
+            <div class="permission-list">
+              @for (permission of currentUser()!.role.permissions; track permission.id) {
+                <div class="permission-item">
+                  <i class="bi bi-check-circle-fill text-success me-2"></i>
+                  <span>{{ permission.name }}</span>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

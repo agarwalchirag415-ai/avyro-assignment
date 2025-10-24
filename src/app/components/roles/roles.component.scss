@@ -1,0 +1,82 @@
+.role-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  }
+
+  .card-footer {
+    background-color: transparent;
+    border-top: 1px solid #e9ecef;
+  }
+}
+
+.permissions-section {
+  margin-top: 1rem;
+}
+
+.permissions-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: #495057;
+}
+
+.permissions-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.permission-badge {
+  font-weight: 500;
+  padding: 0.35rem 0.65rem;
+  font-size: 0.75rem;
+}
+
+.permissions-config {
+  background-color: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 8px;
+}
+
+.permission-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+  padding: 1rem;
+  background-color: white;
+  border-radius: 6px;
+  border: 1px solid #e9ecef;
+}
+
+.permission-check {
+  padding: 0.5rem;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: #f8f9fa;
+  }
+
+  .form-check-label {
+    cursor: pointer;
+    user-select: none;
+  }
+}
+
+.modal {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+@media (max-width: 768px) {
+  .permission-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .permissions-config {
+    padding: 1rem;
+  }
+}
+
