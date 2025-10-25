@@ -23,7 +23,7 @@ export class AuthService {
 
   login(credentials: LoginCredentials): Observable<AuthUser | null> {
     return new Observable(observer => {
-      // Dummy login - accept admin/admin
+      // Fallback: Check for hardcoded admin credentials first
       if (credentials.username === 'admin' && credentials.password === 'admin') {
         const authUser: AuthUser = {
           id: '1',
@@ -36,69 +36,15 @@ export class AuthService {
             name: 'Admin',
             description: 'System Administrator with full access',
             permissions: [
-              {
-                id: '1',
-                name: 'Dashboard Access',
-                type: 'page',
-                code: 'dashboard',
-                description: 'Access to dashboard page'
-              },
-              {
-                id: '2',
-                name: 'Users Access',
-                type: 'page',
-                code: 'users',
-                description: 'Access to users page'
-              },
-              {
-                id: '3',
-                name: 'Roles Access',
-                type: 'page',
-                code: 'roles',
-                description: 'Access to roles page'
-              },
-              {
-                id: '4',
-                name: 'Add User',
-                type: 'feature',
-                code: 'add-user',
-                description: 'Can add new users'
-              },
-              {
-                id: '5',
-                name: 'Edit User',
-                type: 'feature',
-                code: 'edit-user',
-                description: 'Can edit existing users'
-              },
-              {
-                id: '6',
-                name: 'Delete User',
-                type: 'feature',
-                code: 'delete-user',
-                description: 'Can delete users'
-              },
-              {
-                id: '7',
-                name: 'Add Role',
-                type: 'feature',
-                code: 'add-role',
-                description: 'Can add new roles'
-              },
-              {
-                id: '8',
-                name: 'Edit Role',
-                type: 'feature',
-                code: 'edit-role',
-                description: 'Can edit existing roles'
-              },
-              {
-                id: '9',
-                name: 'Delete Role',
-                type: 'feature',
-                code: 'delete-role',
-                description: 'Can delete roles'
-              }
+              { id: '1', name: 'Dashboard Access', type: 'page', code: 'dashboard', description: 'Access to dashboard page' },
+              { id: '2', name: 'Users Access', type: 'page', code: 'users', description: 'Access to users page' },
+              { id: '3', name: 'Roles Access', type: 'page', code: 'roles', description: 'Access to roles page' },
+              { id: '4', name: 'Add User', type: 'feature', code: 'add-user', description: 'Can add new users' },
+              { id: '5', name: 'Edit User', type: 'feature', code: 'edit-user', description: 'Can edit existing users' },
+              { id: '6', name: 'Delete User', type: 'feature', code: 'delete-user', description: 'Can delete users' },
+              { id: '7', name: 'Add Role', type: 'feature', code: 'add-role', description: 'Can add new roles' },
+              { id: '8', name: 'Edit Role', type: 'feature', code: 'edit-role', description: 'Can edit existing roles' },
+              { id: '9', name: 'Delete Role', type: 'feature', code: 'delete-role', description: 'Can delete roles' }
             ],
             createdAt: new Date(),
             updatedAt: new Date()
@@ -108,9 +54,51 @@ export class AuthService {
         this.setAuthUser(authUser);
         observer.next(authUser);
         observer.complete();
-      } else {
-        observer.error({ message: 'Invalid username or password' });
+        return;
       }
+
+      // Dynamic login: Check against users in localStorage
+      const getUsersFromStorage = (): User[] => {
+        if (!this.isBrowser) return [];
+        
+        const usersStr = localStorage.getItem('rbac_users');
+        if (!usersStr) return [];
+        
+        try {
+          return JSON.parse(usersStr);
+        } catch {
+          return [];
+        }
+      };
+
+      // Use timeout to allow UserService initialization
+      setTimeout(() => {
+        const users = getUsersFromStorage();
+        
+        // Find user with matching username and password
+        const user = users.find(
+          u => u.username === credentials.username && 
+               u.password === credentials.password &&
+               u.isActive
+        );
+
+        if (user && user.role) {
+          const authUser: AuthUser = {
+            id: user.id,
+            username: user.username,
+            email: user.email,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            role: user.role
+          };
+
+          this.setAuthUser(authUser);
+          observer.next(authUser);
+          observer.complete();
+        } else {
+          observer.error({ message: 'Invalid username or password' });
+        }
+      }, 500); // Give UserService time to initialize
     });
   }
 

@@ -275,6 +275,23 @@
               />
             </div>
 
+            @if (!isEditMode()) {
+              <div class="mb-3">
+                <label for="password" class="form-label">Password *</label>
+                <input
+                  type="password"
+                  class="form-control"
+                  id="password"
+                  [(ngModel)]="userForm().password"
+                  name="password"
+                  required
+                  minlength="6"
+                  placeholder="Minimum 6 characters"
+                />
+                <small class="text-muted">User will use this password to login</small>
+              </div>
+            }
+
             <div class="mb-3">
               <label for="roleId" class="form-label">Role</label>
               <select

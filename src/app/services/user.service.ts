@@ -37,6 +37,11 @@ export class UserService {
       return throwError(() => new Error('Username already exists'));
     }
 
+    // Validate password is provided
+    if (!user.password || user.password.length < 6) {
+      return throwError(() => new Error('Password is required and must be at least 6 characters'));
+    }
+
     const newUser: User = {
       ...user,
       id: this.generateId(),
@@ -97,6 +102,7 @@ export class UserService {
           {
             id: '1',
             username: 'admin',
+            password: 'admin',
             email: 'admin@rbac.com',
             firstName: 'Admin',
             lastName: 'User',
@@ -109,6 +115,7 @@ export class UserService {
           {
             id: '2',
             username: 'john.manager',
+            password: 'manager123',
             email: 'john@company.com',
             firstName: 'John',
             lastName: 'Manager',
@@ -121,6 +128,7 @@ export class UserService {
           {
             id: '3',
             username: 'jane.viewer',
+            password: 'viewer123',
             email: 'jane@company.com',
             firstName: 'Jane',
             lastName: 'Viewer',

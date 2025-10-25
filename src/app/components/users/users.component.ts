@@ -58,12 +58,13 @@ export class UsersComponent implements OnInit {
     return filtered.slice(start, end);
   });
   
-  userForm = signal<Partial<User>>({
+  userForm = signal<Partial<User & { password: string }>>({
     username: '',
     email: '',
     firstName: '',
     lastName: '',
     roleId: '',
+    password: '',
     isActive: true
   });
 
@@ -112,6 +113,7 @@ export class UsersComponent implements OnInit {
       firstName: '',
       lastName: '',
       roleId: '',
+      password: '',
       isActive: true
     });
     this.showModal.set(true);
@@ -144,6 +146,12 @@ export class UsersComponent implements OnInit {
       return;
     }
 
+    // Validate password for new users
+    if (!this.isEditMode() && (!form.password || form.password.length < 6)) {
+      this.errorMessage.set('Password is required and must be at least 6 characters');
+      return;
+    }
+
     const role = this.roles().find(r => r.id === form.roleId);
     
     if (this.isEditMode()) {
@@ -169,7 +177,7 @@ export class UsersComponent implements OnInit {
         role: role
       } as Omit<User, 'id' | 'createdAt' | 'updatedAt'>).subscribe({
         next: () => {
-          this.toastService.success('User created successfully');
+          this.toastService.success(`User created successfully! They can now login with username "${form.username}" and their password.`);
           this.closeModal();
           this.loadUsers();
         },
